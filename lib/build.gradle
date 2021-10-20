@@ -47,3 +47,27 @@ sourceSets  {
     // this may be needed to make entity classes visible to the persistence scanner
     sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
 }
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes 'Main-Class': 'edu.touro.mco12.bm.App'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    archiveName 'badbm.jar'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'edu.touro.mco12.bm.App'
+    }
+    archiveClassifier = "all"
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
