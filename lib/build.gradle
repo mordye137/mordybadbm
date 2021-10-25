@@ -52,7 +52,7 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     manifest {
-        attributes 'Main-Class': 'edu.touro.mco12.bm.App'
+        attributes 'Main-Class': 'edu.touro.mco152.bm.App'
     }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
@@ -60,14 +60,3 @@ jar {
     archiveName 'badbm.jar'
 }
 
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Main-Class': 'edu.touro.mco12.bm.App'
-    }
-    archiveClassifier = "all"
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    with jar
-}
