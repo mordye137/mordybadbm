@@ -28,9 +28,6 @@ public class EM {
                 System.exit(4);
             }
         }
-        /*
-          This should break the getEntityManager test becasue it does not return an entity manager
-         */
-        return null;
+        return em;
     }
 }
