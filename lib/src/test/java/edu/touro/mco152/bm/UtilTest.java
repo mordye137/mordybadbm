@@ -26,7 +26,7 @@ class UtilTest {
 
         assertTrue(testNegative >= -5 && testNegative <= 0);
         assertTrue(testBigNumber >= 0 && testBigNumber <= 2000);
-        assertTrue(Util.randInt(0, candidate) >= 0 && Util.randInt(0, candidate) <= 100);
+        assertTrue(Util.randInt(0, candidate) >= 0 && Util.randInt(0, candidate) <= candidate);
     }
 
     /**
