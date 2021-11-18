@@ -6,13 +6,19 @@ import edu.touro.mco152.bm.ui.MainFrame;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class NonSwingOutputTest implements IOutput{
 
     DiskWorker diskWorker = new DiskWorker(this);
+    private int mbPerSecond;
+    private Set<Integer> progressSet = new HashSet<Integer>();
+    private int results;
+    private boolean completed;
+
+
 
     /**
      * Bruteforce setup of static classes/fields to allow DiskWorker to run.
@@ -50,13 +56,55 @@ class NonSwingOutputTest implements IOutput{
         }
     }
 
+
+    /**
+     * Make sure benchmark is started by checking that the MB/s is more than 0.
+     * @throws Exception
+     */
     @Test
     public void benchMarkStartTest() throws Exception {
+        //Arrange
         setupDefaultAsPerProperties();
 
+        //Act
         diskWorker.startExecution();
 
+        //Assert
+        assertTrue(mbPerSecond > 0);
+    }
 
+
+    /**
+     * Make sure the center of the recorded percent entries set is around 50%
+     * @throws Exception
+     */
+    @Test
+    public void testPercentComplete() throws Exception {
+        //Arrange
+        //Default properties already set up
+
+        //Act
+        diskWorker.startExecution();
+        List<Integer> progressList = new ArrayList<>(progressSet);
+
+        //Assert
+        assertTrue(progressList.get(progressSet.size() / 2) > 25 && progressList.get(progressSet.size() / 2) < 75);
+    }
+
+    /**
+     * Make sure diskworker returns true,signaling it completed successfully
+     * @throws Exception
+     */
+    @Test
+    public void testCompletion() throws Exception {
+        //Arrange
+        //Default properties already set up
+
+        //Act
+        completed = diskWorker.startExecution();
+
+        //Assert
+        assertTrue(completed);
     }
 
     @Override
@@ -66,12 +114,13 @@ class NonSwingOutputTest implements IOutput{
 
     @Override
     public void setProgressStatus(int percentComplete) {
-        System.out.println(percentComplete);
+        progressSet.add(percentComplete);
     }
 
     @Override
     public void post(DiskMark wMark) {
-
+        mbPerSecond = (int) wMark.getBwMbSec();
+        results = (int) wMark.getCumAvg();
     }
 
     @Override
