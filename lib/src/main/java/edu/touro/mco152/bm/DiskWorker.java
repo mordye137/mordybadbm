@@ -1,5 +1,7 @@
 package edu.touro.mco152.bm;
 
+import edu.touro.mco152.bm.commands.ICommand;
+import edu.touro.mco152.bm.commands.simpleInvoker;
 import edu.touro.mco152.bm.persist.DiskRun;
 import edu.touro.mco152.bm.persist.EM;
 import edu.touro.mco152.bm.ui.Gui;
@@ -48,6 +50,16 @@ public class DiskWorker {
 
     public Boolean startExecution() throws Exception {
 
+        /**
+         * Constructs 2 commands with worker interfaces and parameters from App
+         * and passes them to an invoker
+         */
+        ICommand writeBM = new writeBM(worker, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);
+        ICommand readBM = new readBM(worker, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);
+
+        simpleInvoker bmOptions = new simpleInvoker(writeBM, readBM);
+
+
         /*
           We 'got here' because: a) End-user clicked 'Start' on the benchmark UI,
           which triggered the start-benchmark event associated with the App::startBenchmark()
@@ -57,8 +69,8 @@ public class DiskWorker {
          */
         System.out.println("*** starting new worker thread");
         msg("Running readTest " + App.readTest + "   writeTest " + App.writeTest);
-        msg("num files: " + App.numOfMarks + ", num blks: " + App.numOfBlocks
-                + ", blk size (kb): " + App.blockSizeKb + ", blockSequence: " + App.blockSequence);
+        msg("num files: " + numOfMarks + ", num blks: " + numOfBlocks
+                + ", blk size (kb): " + blockSizeKb + ", blockSequence: " + blockSequence);
 
         /*
           init local vars that keep track of benchmarks, and a large read/write buffer
@@ -90,10 +102,10 @@ public class DiskWorker {
 
         /*
           The GUI allows either a write, read, or both types of BMs to be started. They are done serially.
+          This now uses an invoker to initiate the write benchmark
          */
         if (App.writeTest) {
-            writeBM bmWriter = new writeBM(worker);
-            bmWriter.runWriteBenchmark();
+            bmOptions.writeBm();
         }
 
         /*
@@ -115,11 +127,10 @@ public class DiskWorker {
 
         // Same as above, just for Read operations instead of Writes.
         if (App.readTest) {
-            readBM bmReader = new readBM(worker);
-            bmReader.runReadBenchmark();
+            bmOptions.readBM();
         }
 
-        App.nextMarkNumber += App.numOfMarks;
+        App.nextMarkNumber += numOfMarks;
         return true;
     }
 

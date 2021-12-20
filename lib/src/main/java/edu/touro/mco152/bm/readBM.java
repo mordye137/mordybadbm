@@ -1,5 +1,6 @@
 package edu.touro.mco152.bm;
 
+import edu.touro.mco152.bm.commands.ICommand;
 import edu.touro.mco152.bm.persist.DiskRun;
 import edu.touro.mco152.bm.persist.EM;
 import edu.touro.mco152.bm.ui.Gui;
@@ -19,22 +20,36 @@ import static edu.touro.mco152.bm.DiskMark.MarkType.READ;
 /**
  * A new class that separates the read operations from DiskWorker
  */
-public class readBM {
+public class readBM implements ICommand {
 
     IOutput worker;
+    int numOfMarks;
+    int numOfBlocks;
+    int blockSizeKb;
+    DiskRun.BlockSequence blockSequence;
+
 
     /**
-     * @param worker takes in an instance of the IOutput interface
+     * @param worker the type of Output worker to be used
+     * @param numOfMarks
+     * @param numOfBlocks
+     * @param blockSizeKb
+     * @param blockSequence
      */
-    public readBM(IOutput worker){
+    public readBM(IOutput worker, int numOfMarks, int numOfBlocks, int blockSizeKb, DiskRun.BlockSequence blockSequence){
         this.worker = worker;
+        this.numOfMarks = numOfMarks;
+        this.numOfBlocks = numOfBlocks;
+        this.blockSizeKb = blockSizeKb;
+        this.blockSequence = blockSequence;
     }
 
 
     /**
      * runs the read benchmark
      */
-    public void runReadBenchmark()
+    @Override
+    public void execute()
     {
         // declare local vars formerly in DiskWorker
 
@@ -58,10 +73,10 @@ public class readBM {
         DiskMark rMark;
         int startFileNum = App.nextMarkNumber;
 
-        DiskRun run = new DiskRun(DiskRun.IOMode.READ, App.blockSequence);
-        run.setNumMarks(App.numOfMarks);
-        run.setNumBlocks(App.numOfBlocks);
-        run.setBlockSize(App.blockSizeKb);
+        DiskRun run = new DiskRun(DiskRun.IOMode.READ, blockSequence);
+        run.setNumMarks(numOfMarks);
+        run.setNumBlocks(numOfBlocks);
+        run.setBlockSize(blockSizeKb);
         run.setTxSize(App.targetTxSizeKb());
         run.setDiskInfo(Util.getDiskInfo(dataDir));
 
@@ -70,7 +85,7 @@ public class readBM {
         Gui.chartPanel.getChart().getTitle().setVisible(true);
         Gui.chartPanel.getChart().getTitle().setText(run.getDiskInfo());
 
-        for (int m = startFileNum; m < startFileNum + App.numOfMarks && !worker.gotCancelled(); m++) {
+        for (int m = startFileNum; m < startFileNum + numOfMarks && !worker.gotCancelled(); m++) {
 
             if (App.multiFile) {
                 testFile = new File(dataDir.getAbsolutePath()
@@ -84,7 +99,7 @@ public class readBM {
             try {
                 try (RandomAccessFile rAccFile = new RandomAccessFile(testFile, "r")) {
                     for (int b = 0; b < numOfBlocks; b++) {
-                        if (App.blockSequence == DiskRun.BlockSequence.RANDOM) {
+                        if (blockSequence == DiskRun.BlockSequence.RANDOM) {
                             int rLoc = Util.randInt(0, numOfBlocks - 1);
                             rAccFile.seek((long) rLoc * blockSize);
                         } else {

@@ -1,5 +1,6 @@
 package edu.touro.mco152.bm;
 
+import edu.touro.mco152.bm.commands.ICommand;
 import edu.touro.mco152.bm.persist.DiskRun;
 import edu.touro.mco152.bm.persist.EM;
 import edu.touro.mco152.bm.ui.Gui;
@@ -18,18 +19,35 @@ import static edu.touro.mco152.bm.DiskMark.MarkType.WRITE;
 /**
  * A new class that separates the write operations from DiskWorker
  */
-public class writeBM {
+public class writeBM implements ICommand {
 
     IOutput worker;
+    int numOfMarks;
+    int numOfBlocks;
+    int blockSizeKb;
+    DiskRun.BlockSequence blockSequence;
+
 
     /**
-     * @param worker takes in an instance of the IOutput interface
+     * @param worker the type of Output worker to be used
+     * @param numOfMarks
+     * @param numOfBlocks
+     * @param blockSizeKb
+     * @param blockSequence
      */
-    public writeBM(IOutput worker){
+    public writeBM(IOutput worker, int numOfMarks, int numOfBlocks, int blockSizeKb, DiskRun.BlockSequence blockSequence){
         this.worker = worker;
+        this.numOfMarks = numOfMarks;
+        this.numOfBlocks = numOfBlocks;
+        this.blockSizeKb = blockSizeKb;
+        this.blockSequence = blockSequence;
     }
 
-    public void runWriteBenchmark() {
+    /**
+     * runs the write benchmark
+     */
+    @Override
+    public void execute() {
 
         // declare local vars formerly in DiskWorker
 
@@ -54,10 +72,10 @@ public class writeBM {
         int startFileNum = App.nextMarkNumber;
 
 
-        DiskRun run = new DiskRun(DiskRun.IOMode.WRITE, App.blockSequence);
-        run.setNumMarks(App.numOfMarks);
-        run.setNumBlocks(App.numOfBlocks);
-        run.setBlockSize(App.blockSizeKb);
+        DiskRun run = new DiskRun(DiskRun.IOMode.WRITE, blockSequence);
+        run.setNumMarks(numOfMarks);
+        run.setNumBlocks(numOfBlocks);
+        run.setBlockSize(blockSizeKb);
         run.setTxSize(App.targetTxSizeKb());
         run.setDiskInfo(Util.getDiskInfo(dataDir));
 
@@ -77,7 +95,7 @@ public class writeBM {
               that keeps writing data (in its own loop - for specified # of blocks). Each 'Mark' is timed
               and is reported to the GUI for display as each Mark completes.
              */
-        for (int m = startFileNum; m < startFileNum + App.numOfMarks && !worker.gotCancelled(); m++) {
+        for (int m = startFileNum; m < startFileNum + numOfMarks && !worker.gotCancelled(); m++) {
 
             if (App.multiFile) {
                 testFile = new File(dataDir.getAbsolutePath()
@@ -96,7 +114,7 @@ public class writeBM {
             try {
                 try (RandomAccessFile rAccFile = new RandomAccessFile(testFile, mode)) {
                     for (int b = 0; b < numOfBlocks; b++) {
-                        if (App.blockSequence == DiskRun.BlockSequence.RANDOM) {
+                        if (blockSequence == DiskRun.BlockSequence.RANDOM) {
                             int rLoc = Util.randInt(0, numOfBlocks - 1);
                             rAccFile.seek((long) rLoc * blockSize);
                         } else {
