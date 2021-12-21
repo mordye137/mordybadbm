@@ -40,7 +40,6 @@ import static edu.touro.mco152.bm.DiskMark.MarkType.WRITE;
 
 //Diskworker constructer that takes in a worker to display results
 
-
 public class DiskWorker {
     IOutput worker;
 
@@ -50,9 +49,9 @@ public class DiskWorker {
 
     public Boolean startExecution() throws Exception {
 
-        /**
+        /*
          * Constructs 2 commands with worker interfaces and parameters from App
-         * and passes them to an invoker
+         * and passes them to an invoker.
          */
         ICommand writeBM = new writeBM(worker, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);
         ICommand readBM = new readBM(worker, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);

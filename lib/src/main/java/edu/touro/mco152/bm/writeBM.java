@@ -29,6 +29,7 @@ public class writeBM implements ICommand {
 
 
     /**
+     * A constructor for our command
      * @param worker the type of Output worker to be used
      * @param numOfMarks
      * @param numOfBlocks
