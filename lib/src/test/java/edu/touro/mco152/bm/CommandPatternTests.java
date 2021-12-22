@@ -1,7 +1,9 @@
 package edu.touro.mco152.bm;
 
 import edu.touro.mco152.bm.commands.ICommand;
+import edu.touro.mco152.bm.commands.readBM;
 import edu.touro.mco152.bm.commands.simpleInvoker;
+import edu.touro.mco152.bm.commands.writeBM;
 import edu.touro.mco152.bm.ui.Gui;
 import edu.touro.mco152.bm.ui.MainFrame;
 import org.junit.jupiter.api.Test;
@@ -9,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.*;
 
-import static edu.touro.mco152.bm.App.*;
-import static edu.touro.mco152.bm.App.blockSequence;
 import static edu.touro.mco152.bm.persist.DiskRun.BlockSequence.SEQUENTIAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
