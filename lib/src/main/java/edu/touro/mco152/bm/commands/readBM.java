@@ -6,12 +6,14 @@ import edu.touro.mco152.bm.persist.DiskRun;
 import edu.touro.mco152.bm.persist.EM;
 import edu.touro.mco152.bm.persist.dbObserver;
 import edu.touro.mco152.bm.ui.Gui;
+import edu.touro.mco152.bm.ui.guiObserver;
 import jakarta.persistence.EntityManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
@@ -31,6 +33,7 @@ public class readBM implements ICommand{
     int numOfBlocks;
     int blockSizeKb;
     DiskRun.BlockSequence blockSequence;
+    ArrayList<bmObserver> observers = new ArrayList<bmObserver>();
 
 
     /**
@@ -79,6 +82,14 @@ public class readBM implements ICommand{
         int startFileNum = App.nextMarkNumber;
 
         DiskRun run = new DiskRun(DiskRun.IOMode.READ, blockSequence);
+
+        //Instantaite observers
+        bmObserver dbObserver = new dbObserver(run);
+        bmObserver guiObserver = new guiObserver(run);
+        //Register observers
+        registerObserver(dbObserver);
+        registerObserver(guiObserver);
+
         run.setNumMarks(numOfMarks);
         run.setNumBlocks(numOfBlocks);
         run.setBlockSize(blockSizeKb);
@@ -138,11 +149,22 @@ public class readBM implements ICommand{
         }
 
         //Observer pattern goes here
-        EntityManager em = EM.getEntityManager();
-        em.getTransaction().begin();
-        em.persist(run);
-        em.getTransaction().commit();
+        notifyObservers();
+    }
 
-        Gui.runPanel.addRun(run);
+    //Observer methods
+
+    /**
+     * Register method to add new observer to list of observers
+     * @param o observer to add
+     */
+    public void registerObserver(bmObserver o){
+        observers.add(o);
+    }
+
+    public void notifyObservers(){
+        for (bmObserver o: observers) {
+            o.update();
+        }
     }
 }
