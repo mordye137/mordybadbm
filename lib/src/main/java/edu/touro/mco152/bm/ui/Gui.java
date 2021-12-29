@@ -20,7 +20,7 @@ import java.text.NumberFormat;
 /**
  * Store gui references for easy access
  */
-public final class Gui implements bmObserver {
+public final class Gui {
 
     public static ChartPanel chartPanel = null;
     public static MainFrame mainFrame = null;
@@ -141,8 +141,4 @@ public final class Gui implements bmObserver {
         chart.getXYPlot().getRenderer().setSeriesVisibleInLegend(7, App.readTest && App.showMaxMin);
     }
 
-    @Override
-    public void update() {
-
-    }
 }

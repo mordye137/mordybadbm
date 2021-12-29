@@ -169,6 +169,7 @@ public class writeBM implements ICommand {
             /*
               Persist info about the Write BM Run (e.g. into Derby Database) and add it to a GUI panel
              */
+
         //Observer goes here
         EntityManager em = EM.getEntityManager();
         em.getTransaction().begin();
