@@ -31,6 +31,7 @@ public class writeBM implements ICommand {
     int numOfBlocks;
     int blockSizeKb;
     DiskRun.BlockSequence blockSequence;
+    //List of Observers
     ArrayList<bmObserver> observers = new ArrayList<bmObserver>();
 
 
@@ -84,6 +85,7 @@ public class writeBM implements ICommand {
         //Instantaite observers
         bmObserver dbObserver = new dbObserver(run);
         bmObserver guiObserver = new guiObserver(run);
+
         //Register observers
         registerObserver(dbObserver);
         registerObserver(guiObserver);
@@ -180,7 +182,7 @@ public class writeBM implements ICommand {
               Persist info about the Write BM Run (e.g. into Derby Database) and add it to a GUI panel
              */
 
-        //Observer goes here
+        //Notify Observers
         notifyObservers();
     }
 
@@ -194,6 +196,9 @@ public class writeBM implements ICommand {
         observers.add(o);
     }
 
+    /**
+     * Notify method that loops through the observer list and calls each update() method
+     */
     public void notifyObservers(){
         for (bmObserver o: observers) {
             o.update();
