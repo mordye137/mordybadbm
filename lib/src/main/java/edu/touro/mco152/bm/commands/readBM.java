@@ -34,6 +34,8 @@ public class readBM implements ICommand{
     int numOfBlocks;
     int blockSizeKb;
     DiskRun.BlockSequence blockSequence;
+    DiskRun run;
+    DiskMark rMark;
     //List of Observers
     ArrayList<bmObserver> observers = new ArrayList<bmObserver>();
 
@@ -80,18 +82,17 @@ public class readBM implements ICommand{
             }
         }
 
-        DiskMark rMark;
         int startFileNum = App.nextMarkNumber;
 
-        DiskRun run = new DiskRun(DiskRun.IOMode.READ, blockSequence);
+        run = new DiskRun(DiskRun.IOMode.READ, blockSequence);
 
-        //Instantaite observers
+        /*//Instantaite observers
         bmObserver dbObserver = new dbObserver(run);
         bmObserver guiObserver = new guiObserver(run);
 
         //Register observers
         registerObserver(dbObserver);
-        registerObserver(guiObserver);
+        registerObserver(guiObserver);*/
 
         run.setNumMarks(numOfMarks);
         run.setNumBlocks(numOfBlocks);
@@ -153,11 +154,11 @@ public class readBM implements ICommand{
         }
 
         //Register Slack Observer
-        bmObserver slackObserver = new slackObserver(run.getRunAvg(), run.getRunMax());
-        registerObserver(slackObserver);
+        /*bmObserver slackObserver = new slackObserver(run.getRunAvg(), run.getRunMax());
+        registerObserver(slackObserver);*/
 
         //Notify Observers
-        notifyObservers();
+        //notifyObservers();
     }
 
     //Observer methods
@@ -179,4 +180,8 @@ public class readBM implements ICommand{
             o.update();
         }
     }
+
+    public DiskRun getRun() {return run;}
+
+    public DiskMark getMark() {return rMark;}
 }

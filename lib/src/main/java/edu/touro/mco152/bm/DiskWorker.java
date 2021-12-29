@@ -4,7 +4,10 @@ import edu.touro.mco152.bm.commands.ICommand;
 import edu.touro.mco152.bm.commands.readBM;
 import edu.touro.mco152.bm.commands.simpleInvoker;
 import edu.touro.mco152.bm.commands.writeBM;
+import edu.touro.mco152.bm.persist.dbObserver;
+import edu.touro.mco152.bm.slack.slackObserver;
 import edu.touro.mco152.bm.ui.Gui;
+import edu.touro.mco152.bm.ui.guiObserver;
 
 import javax.swing.*;
 
@@ -39,14 +42,17 @@ public class DiskWorker {
 
     public Boolean startExecution() throws Exception {
 
-
+        //Instantaite observers
+        dbObserver dbObserver;
+        guiObserver guiObserver;
+        slackObserver slackObserver;
 
         /*
          * Constructs 2 commands with worker interfaces and parameters from App
          * and passes them to an invoker.
          */
-        ICommand writeBM = new writeBM(worker, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);
-        ICommand readBM = new readBM(worker, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);
+        writeBM writeBM = new writeBM(worker, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);
+        readBM readBM = new readBM(worker, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);
 
         simpleInvoker bmOptions = new simpleInvoker(writeBM, readBM);
 
@@ -120,6 +126,15 @@ public class DiskWorker {
         if (App.readTest) {
             bmOptions.readBM();
         }
+
+        dbObserver = new dbObserver(readBM.getRun());
+        guiObserver = new guiObserver(readBM.getRun());
+        slackObserver = new slackObserver(readBM.getMark().getCumAvg(), readBM.getMark().getCumMax());
+        readBM.registerObserver(dbObserver);
+        readBM.registerObserver(guiObserver);
+        readBM.registerObserver(slackObserver);
+
+        readBM.notifyObservers();
 
         App.nextMarkNumber += numOfMarks;
         return true;

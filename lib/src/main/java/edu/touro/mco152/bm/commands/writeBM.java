@@ -31,6 +31,8 @@ public class writeBM implements ICommand {
     int numOfBlocks;
     int blockSizeKb;
     DiskRun.BlockSequence blockSequence;
+    DiskRun run;
+    DiskMark wMark;
     //List of Observers
     ArrayList<bmObserver> observers = new ArrayList<bmObserver>();
 
@@ -76,19 +78,18 @@ public class writeBM implements ICommand {
             }
         }
 
-        DiskMark wMark;
         int startFileNum = App.nextMarkNumber;
 
 
-        DiskRun run = new DiskRun(DiskRun.IOMode.WRITE, blockSequence);
+        run = new DiskRun(DiskRun.IOMode.WRITE, blockSequence);
 
-        //Instantaite observers
+        /*//Instantaite observers
         bmObserver dbObserver = new dbObserver(run);
         bmObserver guiObserver = new guiObserver(run);
 
         //Register observers
         registerObserver(dbObserver);
-        registerObserver(guiObserver);
+        registerObserver(guiObserver);*/
 
         run.setNumMarks(numOfMarks);
         run.setNumBlocks(numOfBlocks);
@@ -183,7 +184,7 @@ public class writeBM implements ICommand {
              */
 
         //Notify Observers
-        notifyObservers();
+        //notifyObservers();
     }
 
     //Observer methods
@@ -204,4 +205,8 @@ public class writeBM implements ICommand {
             o.update();
         }
     }
+
+    public DiskRun getRun() {return run;}
+
+    public DiskMark getMark() {return wMark;}
 }
