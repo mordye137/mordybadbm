@@ -33,11 +33,13 @@ import static edu.touro.mco152.bm.App.*;
 public class DiskWorker {
     IOutput worker;
 
-    public DiskWorker(IOutput worker){
+    public DiskWorker(IOutput worker) {
         this.worker = worker;
     }
 
     public Boolean startExecution() throws Exception {
+
+
 
         /*
          * Constructs 2 commands with worker interfaces and parameters from App
@@ -122,12 +124,10 @@ public class DiskWorker {
         App.nextMarkNumber += numOfMarks;
         return true;
     }
-
+}
     /*
      * Process a list of 'chunks' that have been processed, ie that our thread has previously
      * published to Swing. For my info, watch Professor Cohen's video -
      * Module_6_RefactorBadBM Swing_DiskWorker_Tutorial.mp4
      * @param markList a list of DiskMark objects reflecting some completed benchmarks
-     */
-
-}
+  */

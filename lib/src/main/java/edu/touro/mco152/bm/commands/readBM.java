@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Date;
+import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +25,7 @@ import static edu.touro.mco152.bm.DiskMark.MarkType.READ;
 /**
  * A new class that separates the read operations from DiskWorker
  */
-public class readBM implements ICommand {
+public class readBM implements ICommand{
 
     IOutput worker;
     int numOfMarks;
@@ -137,6 +138,7 @@ public class readBM implements ICommand {
             run.setEndTime(new Date());
         }
 
+        //Observer pattern goes here
         EntityManager em = EM.getEntityManager();
         em.getTransaction().begin();
         em.persist(run);
