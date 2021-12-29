@@ -5,6 +5,7 @@ import edu.touro.mco152.bm.commands.ICommand;
 import edu.touro.mco152.bm.persist.DiskRun;
 import edu.touro.mco152.bm.persist.EM;
 import edu.touro.mco152.bm.persist.dbObserver;
+import edu.touro.mco152.bm.slack.slackObserver;
 import edu.touro.mco152.bm.ui.Gui;
 import edu.touro.mco152.bm.ui.guiObserver;
 import jakarta.persistence.EntityManager;
@@ -146,7 +147,11 @@ public class readBM implements ICommand{
             run.setRunMin(rMark.getCumMin());
             run.setRunAvg(rMark.getCumAvg());
             run.setEndTime(new Date());
+
         }
+
+        bmObserver slackObserver = new slackObserver(run.getRunAvg(), run.getRunMax());
+        registerObserver(slackObserver);
 
         //Observer pattern goes here
         notifyObservers();
