@@ -1,19 +1,20 @@
 package edu.touro.mco152.bm.commands;
 
-import edu.touro.mco152.bm.App;
-import edu.touro.mco152.bm.DiskMark;
-import edu.touro.mco152.bm.IOutput;
-import edu.touro.mco152.bm.Util;
+import edu.touro.mco152.bm.*;
 import edu.touro.mco152.bm.commands.ICommand;
 import edu.touro.mco152.bm.persist.DiskRun;
 import edu.touro.mco152.bm.persist.EM;
+import edu.touro.mco152.bm.persist.dbObserver;
 import edu.touro.mco152.bm.ui.Gui;
+import edu.touro.mco152.bm.ui.guiObserver;
 import jakarta.persistence.EntityManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +31,10 @@ public class writeBM implements ICommand {
     int numOfBlocks;
     int blockSizeKb;
     DiskRun.BlockSequence blockSequence;
+    DiskRun run;
+    DiskMark wMark;
+    //List of Observers
+    ArrayList<bmObserver> observers = new ArrayList<bmObserver>();
 
 
     /**
@@ -73,11 +78,11 @@ public class writeBM implements ICommand {
             }
         }
 
-        DiskMark wMark;
         int startFileNum = App.nextMarkNumber;
 
 
-        DiskRun run = new DiskRun(DiskRun.IOMode.WRITE, blockSequence);
+        run = new DiskRun(DiskRun.IOMode.WRITE, blockSequence);
+
         run.setNumMarks(numOfMarks);
         run.setNumBlocks(numOfBlocks);
         run.setBlockSize(blockSizeKb);
@@ -166,14 +171,28 @@ public class writeBM implements ICommand {
             run.setEndTime(new Date());
         } // END outer loop for specified duration (number of 'marks') for WRITE bench mark
 
-            /*
-              Persist info about the Write BM Run (e.g. into Derby Database) and add it to a GUI panel
-             */
-        EntityManager em = EM.getEntityManager();
-        em.getTransaction().begin();
-        em.persist(run);
-        em.getTransaction().commit();
-
-        Gui.runPanel.addRun(run);
     }
+
+    //Observer methods
+
+    /**
+     * Register method to add new observer to list of observers
+     * @param o observer to add
+     */
+    public void registerObserver(bmObserver o){
+        observers.add(o);
+    }
+
+    /**
+     * Notify method that loops through the observer list and calls each update() method
+     */
+    public void notifyObservers(){
+        for (bmObserver o: observers) {
+            o.update();
+        }
+    }
+
+    public DiskRun getRun() {return run;}
+
+    public DiskMark getMark() {return wMark;}
 }
