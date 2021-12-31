@@ -83,14 +83,6 @@ public class writeBM implements ICommand {
 
         run = new DiskRun(DiskRun.IOMode.WRITE, blockSequence);
 
-        /*//Instantaite observers
-        bmObserver dbObserver = new dbObserver(run);
-        bmObserver guiObserver = new guiObserver(run);
-
-        //Register observers
-        registerObserver(dbObserver);
-        registerObserver(guiObserver);*/
-
         run.setNumMarks(numOfMarks);
         run.setNumBlocks(numOfBlocks);
         run.setBlockSize(blockSizeKb);
@@ -179,12 +171,6 @@ public class writeBM implements ICommand {
             run.setEndTime(new Date());
         } // END outer loop for specified duration (number of 'marks') for WRITE bench mark
 
-            /*
-              Persist info about the Write BM Run (e.g. into Derby Database) and add it to a GUI panel
-             */
-
-        //Notify Observers
-        //notifyObservers();
     }
 
     //Observer methods

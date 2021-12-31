@@ -127,13 +127,15 @@ public class DiskWorker {
             bmOptions.readBM();
         }
 
+        //Insantiate observers
         dbObserver = new dbObserver(readBM.getRun());
         guiObserver = new guiObserver(readBM.getRun());
         slackObserver = new slackObserver(readBM.getMark().getCumAvg(), readBM.getMark().getCumMax());
+        //Register Observers
         readBM.registerObserver(dbObserver);
         readBM.registerObserver(guiObserver);
         readBM.registerObserver(slackObserver);
-
+        //Notify observers
         readBM.notifyObservers();
 
         App.nextMarkNumber += numOfMarks;

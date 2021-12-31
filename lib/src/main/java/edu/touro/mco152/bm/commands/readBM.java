@@ -86,14 +86,6 @@ public class readBM implements ICommand{
 
         run = new DiskRun(DiskRun.IOMode.READ, blockSequence);
 
-        /*//Instantaite observers
-        bmObserver dbObserver = new dbObserver(run);
-        bmObserver guiObserver = new guiObserver(run);
-
-        //Register observers
-        registerObserver(dbObserver);
-        registerObserver(guiObserver);*/
-
         run.setNumMarks(numOfMarks);
         run.setNumBlocks(numOfBlocks);
         run.setBlockSize(blockSizeKb);
@@ -153,12 +145,6 @@ public class readBM implements ICommand{
 
         }
 
-        //Register Slack Observer
-        /*bmObserver slackObserver = new slackObserver(run.getRunAvg(), run.getRunMax());
-        registerObserver(slackObserver);*/
-
-        //Notify Observers
-        //notifyObservers();
     }
 
     //Observer methods
